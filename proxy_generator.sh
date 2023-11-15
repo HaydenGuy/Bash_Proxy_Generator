@@ -67,3 +67,36 @@ select choice in "${options[@]}"; do
             ;;
     esac
 done
+
+resolution="${width}x${height}"
+
+file_name=""
+while [ -z "$file_name" ]; do
+    read -p "What should your file(s) be called? " file_name
+done
+
+output_dir=""
+while [ -z "$output_dir" ]; do
+    read -ep "Where should your file(s) be saved (cwd for current directory)? " output_dir
+done
+
+if [ "$output_dir" == "cwd" ]; then
+    output_dir="$(pwd)"
+fi
+
+if [ -d "$output_dir" ]; then
+    if [ "$arg_1" == "file" ]; then
+        ffmpeg -i "$1" -c:v "libx264" -s "$resolution" "$output_dir/$file_name$count.mp4"
+    elif [ "$arg_1" == "dir" ]; then
+        count=1
+        for file in "$1"/*; do
+            if [ -f "$file" ] && [ "$file" != "$0" ]; then
+                ffmpeg -i "$file" -c:v "libx264" -s "$resolution" "$output_dir/$file_name$count.mp4"
+                count=$((count+1))
+            fi
+        done
+    else
+        echo "Invalid file or output directory"
+        exit 1
+    fi
+fi
