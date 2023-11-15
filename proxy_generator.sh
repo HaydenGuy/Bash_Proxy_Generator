@@ -34,8 +34,27 @@ select choice in "${options[@]}"; do
             break
             ;;
         "Custom")
-            read -p "Resolution Width: " width
-            read -p "Resolution Height: " height
+            width=""
+            height=""
+            
+            echo "Please enter a positive width and height. Type quit to exit the application"
+            while ! [[ $width =~ ^[1-9][0-9]*$ && $height =~ ^[1-9][0-9]*$ ]]; do
+                read -p "Resolution Width: " width
+
+                if [[ $width == "quit" ]]; then
+                    exit 1
+                fi
+
+                read -p "Resolution Height: " height
+                
+                if [[ $height == "quit" ]]; then
+                    exit 1
+                fi
+
+                if ! [[ $width =~ ^[1-9][0-9]*$ && $height =~ ^[1-9][0-9]*$ ]]; then
+                    echo "Invalid input. Please enter positive numbers for both width and height."
+                fi
+            done
             break
             ;;
         "Exit")
